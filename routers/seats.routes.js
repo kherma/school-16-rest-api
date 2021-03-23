@@ -10,9 +10,19 @@ router
   })
   .post((req, res) => {
     const { day, seat, client, email } = req.body;
+
     if (day && seat && client && email) {
-      utils.pushID(db.seats, req.body);
-      res.json({ message: "Success post" });
+      // Check if seat is taken
+      const isTaken = db.seats.find((item) => {
+        return item.day === Number(day) && item.seat === Number(seat);
+      });
+
+      if (!isTaken) {
+        utils.pushID(db.seats, req.body);
+        res.json({ message: "Success post" });
+      } else {
+        res.status(406).json({ message: "Error, seat taken" });
+      }
     } else {
       res.status(400).json({ message: "Error, can not push" });
     }
