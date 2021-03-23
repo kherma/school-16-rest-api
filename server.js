@@ -6,6 +6,7 @@ const express = require("express");
 const testimonials = require("./routers/testimonials.routes");
 const concetrs = require("./routers/concerts.routes");
 const seats = require("./routers/seats.routes");
+const cors = require("cors");
 
 // ============
 // Setup
@@ -17,6 +18,7 @@ const app = express();
 // Middleware
 // ============
 
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
