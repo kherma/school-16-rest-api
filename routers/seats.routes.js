@@ -3,16 +3,6 @@ const router = express.Router();
 const db = require("./../db");
 const utils = require("./../utils");
 
-// ID generator
-function* idGenerator() {
-  let id = db.seats.length + 1;
-  while (true) {
-    yield id;
-    id++;
-  }
-}
-const generator = idGenerator();
-
 router
   .route("/seats")
   .get((req, res) => {
