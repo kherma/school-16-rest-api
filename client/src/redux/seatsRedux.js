@@ -48,7 +48,13 @@ export const addSeatRequest = (seat) => {
       dispatch(addSeat(res));
       dispatch(endRequest({ name: "ADD_SEAT" }));
     } catch (e) {
-      dispatch(errorRequest({ name: "ADD_SEAT", error: e.message }));
+      dispatch(
+        errorRequest({
+          name: "ADD_SEAT",
+          status: e.response.status,
+          error: e.message,
+        })
+      );
     }
   };
 };
@@ -91,6 +97,7 @@ export default function reducer(statePart = initialState, action = {}) {
           ...statePart.requests,
           [action.payload.name]: {
             pending: false,
+            status: action.payload.status,
             error: action.payload.error,
             success: false,
           },

@@ -95,9 +95,21 @@ class OrderTicketForm extends React.Component {
                 Maybe you forgot to choose your seat?
               </Alert>
             )}
-            {requests["ADD_SEAT"] && requests["ADD_SEAT"].error && !isError && (
-              <Alert color="danger">{requests["ADD_SEAT"].error}</Alert>
-            )}
+            {requests["ADD_SEAT"] &&
+              requests["ADD_SEAT"].error &&
+              !isError &&
+              requests["ADD_SEAT"].status === 406 && (
+                <Alert color="danger">
+                  The seat has already been reserved. Please try to choose a
+                  different seat.
+                </Alert>
+              )}
+            {requests["ADD_SEAT"] &&
+              requests["ADD_SEAT"].error &&
+              !isError &&
+              requests["ADD_SEAT"].status !== 406 && (
+                <Alert color="danger">{requests["ADD_SEAT"].error}</Alert>
+              )}
             {requests["ADD_SEAT"] &&
               requests["ADD_SEAT"].success &&
               !isError && (
