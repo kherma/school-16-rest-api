@@ -23,6 +23,10 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, "/client/build")));
 app.use("/api", testimonials);

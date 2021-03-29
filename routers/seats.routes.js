@@ -19,6 +19,7 @@ router
 
       if (!isTaken) {
         utils.pushID(db.seats, req.body);
+        req.io.emit("seatsUpdated", db.seats);
         res.json({ message: "Success post" });
       } else {
         res.status(406).json({ message: "Error, seat taken" });
