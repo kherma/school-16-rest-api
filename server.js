@@ -50,5 +50,5 @@ const server = app.listen(process.env.PORT || port, () => {
 const io = socket(server);
 
 io.on("connection", (socket) => {
-  console.log("New socket with id:" + socket.id);
+  console.log("New socket with id: " + socket.id);
 });
