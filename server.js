@@ -2,6 +2,7 @@
 // Imports
 // ============
 const express = require("express");
+const socket = require("socket.io");
 
 const testimonials = require("./routers/testimonials.routes");
 const concetrs = require("./routers/concerts.routes");
@@ -43,6 +44,11 @@ app.get("*", (req, res) => {
 // Start Server
 // ============
 
-app.listen(process.env.PORT || port, () => {
+const server = app.listen(process.env.PORT || port, () => {
   console.log(`Server is running on port: ${port}`);
+});
+const io = socket(server);
+
+io.on("connection", (socket) => {
+  console.log("New socket with id:" + socket.id);
 });
