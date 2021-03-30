@@ -51,8 +51,9 @@ class SeatChooser extends React.Component {
 
   render() {
     const { prepareSeat } = this;
-    const { requests } = this.props;
-
+    const { requests, seats, chosenDay } = this.props;
+    const bookedSeats = seats.filter((seat) => seat.day === chosenDay);
+    const freeSeats = 50 - bookedSeats.length;
     return (
       <div>
         <h3>Pick a seat</h3>
@@ -62,6 +63,7 @@ class SeatChooser extends React.Component {
         <small id="pickHelpTwo" className="form-text text-muted ml-2 mb-4">
           <Button outline color="primary" /> – it's empty
         </small>
+        <p>Free seats: {freeSeats}/50</p>
         {requests["LOAD_SEATS"] && requests["LOAD_SEATS"].success && (
           <div className="seats">
             {[...Array(50)].map((x, i) => prepareSeat(i + 1))}
