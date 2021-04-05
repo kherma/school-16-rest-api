@@ -1,11 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import Concert from './../Concert/Concert';
+import Concert from "./../Concert/Concert";
 
 const Concerts = ({ concerts }) => (
   <section>
-    {concerts.map(con => <Concert key={con.id} {...con} />)}
+    {concerts.map((con) => (
+      <Concert key={con._id} {...con} />
+    ))}
   </section>
-)
+);
 
 export default Concerts;
