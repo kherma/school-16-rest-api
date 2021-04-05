@@ -3,12 +3,13 @@
 // ============
 const express = require("express");
 const socket = require("socket.io");
+const mongoose = require("mongoose");
+const path = require("path");
+const cors = require("cors");
 
 const testimonials = require("./routers/testimonials.routes");
 const concetrs = require("./routers/concerts.routes");
 const seats = require("./routers/seats.routes");
-const path = require("path");
-const cors = require("cors");
 
 // ============
 // Setup
@@ -42,6 +43,25 @@ app.use("/api/*", (req, res) => {
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build/index.html"));
+});
+
+// =========================
+// BackEnd to DB connection
+// =========================
+
+mongoose.connect("mongodb://localhost:27017/NewWaveDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+
+db.once("open", () => {
+  console.log("Connected to the database");
+});
+
+db.on("error", (err) => {
+  console.log(`Error: ${err}`);
 });
 
 // ============
