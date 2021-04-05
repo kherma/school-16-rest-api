@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const seatSchema = new mongoose.Schema({
-  id: { type: Number, required: true },
   day: { type: Number, required: true },
   seat: { type: Number, required: true },
   client: { type: String, required: true },

@@ -1,61 +1,84 @@
 const express = require("express");
 const router = express.Router();
-const db = require("./../db");
-const utils = require("./../utils");
+const Seat = require("../models/seat.model");
 
 router
   .route("/seats")
-  .get((req, res) => {
-    res.json(db.seats);
+  .get(async (req, res) => {
+    try {
+      res.json(await Seat.find());
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   })
-  .post((req, res) => {
+  .post(async (req, res) => {
     const { day, seat, client, email } = req.body;
-
-    if (day && seat && client && email) {
-      // Check if seat is taken
-      const isTaken = db.seats.find((item) => {
-        return item.day === Number(day) && item.seat === Number(seat);
+    try {
+      const newSeat = new Seat({
+        day: day,
+        seat: seat,
+        client: client,
+        email: email,
       });
-
-      if (!isTaken) {
-        utils.pushID(db.seats, req.body);
-        req.io.emit("seatsUpdated", db.seats);
-        res.json({ message: "Success post" });
-      } else {
-        res.status(406).json({ message: "Error, seat taken" });
-      }
-    } else {
-      res.status(400).json({ message: "Error, can not push" });
+      await newSeat.save();
+      res.json({ message: "OK" });
+    } catch (err) {
+      res.status(500).json({ message: err });
     }
   });
 
-router.route("/seats/random").get((req, res) => {
-  res.json(utils.randomID(db.seats));
+router.route("/seats/random").get(async (req, res) => {
+  try {
+    const count = await Seat.countDocuments();
+    const random = Math.floor(Math.random() * count);
+    const seat = await Seat.findOne().skip(random);
+    seat ? res.json(seat) : res.status(404).json({ message: "Not found" });
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
 });
 
 router
   .route("/seats/:id")
-  .get((req, res) => {
-    const response = utils.findID(db.seats, req.params.id);
-    response ? res.json(response) : res.status(400).json(response);
+  .get(async (req, res) => {
+    try {
+      const seat = await Seat.findById(req.params.id);
+      seat ? res.json(seat) : res.status(404).json({ message: "Not found" });
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   })
-  .put((req, res) => {
-    const id = req.params.id;
-    const response = utils.modifyID(db.seats, id, req.body);
-    response
-      ? res.json({ response: `Success put` })
-      : res
-          .status(400)
-          .json({ response: `Error, can't find item with id ${id}` });
+  .put(async (req, res) => {
+    const { day, seat, client, email } = req.body;
+    const setObject = {};
+    if (day) setObject.day = day;
+    if (seat) setObject.seat = seat;
+    if (client) setObject.client = client;
+    if (email) setObject.email = email;
+    try {
+      const seat = await Seat.findById(req.params.id);
+      if (seat) {
+        await Seat.updateOne({ _id: req.params.id }, { $set: setObject });
+        res.json({ message: "OK" });
+      } else {
+        res.status(404).json({ message: "Not found..." });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   })
-  .delete((req, res) => {
-    const id = req.params.id;
-    const response = utils.deleteID(db.seats, id);
-    response
-      ? res.json({ message: `Success delete` })
-      : res
-          .status(400)
-          .json({ message: `Error, can't find item with id ${id}` });
+  .delete(async (req, res) => {
+    try {
+      const seat = await Seat.findById(req.params.id);
+      if (seat) {
+        await Seat.deleteOne({ _id: req.params.id });
+        res.json({ message: "OK" });
+      } else {
+        res.status(404).json({ message: "Not found..." });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   });
 
 module.exports = router;

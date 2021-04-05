@@ -1,50 +1,87 @@
 const express = require("express");
 const router = express.Router();
-const db = require("./../db");
-const utils = require("./../utils");
+const Testimonial = require("../models/testimonial.model");
 
 router
   .route("/testimonials")
-  .get((req, res) => {
-    res.json(db.testimonials);
+  .get(async (req, res) => {
+    try {
+      res.json(await Testimonial.find());
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   })
-  .post((req, res) => {
+  .post(async (req, res) => {
     const { author, text } = req.body;
-    if (author && text) {
-      utils.pushID(db.testimonials, req.body);
-      res.json({ message: "Success post" });
-    } else {
-      res.status(400).json({ message: "Error, can not push" });
+    try {
+      const newTestimonial = new Testimonial({
+        author: author,
+        text: text,
+      });
+      await newTestimonial.save();
+      res.json({ message: "OK" });
+    } catch (err) {
+      res.status(500).json({ message: err });
     }
   });
 
-router.route("/testimonials/random").get((req, res) => {
-  res.json(utils.randomID(db.testimonials));
+router.route("/testimonials/random").get(async (req, res) => {
+  try {
+    const count = await Testimonial.countDocuments();
+    const random = Math.floor(Math.random() * count);
+    const testimonial = await Testimonial.findOne().skip(random);
+    testimonial
+      ? res.json(testimonial)
+      : res.status(404).json({ message: "Not found" });
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
 });
 
 router
   .route("/testimonials/:id")
-  .get((req, res) => {
-    const response = utils.findID(db.testimonials, req.params.id);
-    response ? res.json(response) : res.status(400).json(response);
+  .get(async (req, res) => {
+    try {
+      const testimonial = await Testimonial.findById(req.params.id);
+      testimonial
+        ? res.json(testimonial)
+        : res.status(404).json({ message: "Not found" });
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   })
-  .put((req, res) => {
-    const id = req.params.id;
-    const response = utils.modifyID(db.testimonials, id, req.body);
-    response
-      ? res.json({ response: `Success put` })
-      : res
-          .status(400)
-          .json({ response: `Error, can't find item with id ${id}` });
+  .put(async (req, res) => {
+    const { author, text } = req.body;
+    const setObject = {};
+    if (author) setObject.author = author;
+    if (text) setObject.text = text;
+    try {
+      const testimonial = await Testimonial.findById(req.params.id);
+      if (testimonial) {
+        await Testimonial.updateOne(
+          { _id: req.params.id },
+          { $set: setObject }
+        );
+        res.json({ message: "OK" });
+      } else {
+        res.status(404).json({ message: "Not found..." });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   })
-  .delete((req, res) => {
-    const id = req.params.id;
-    const response = utils.deleteID(db.testimonials, id);
-    response
-      ? res.json({ message: `Success delete` })
-      : res
-          .status(400)
-          .json({ message: `Error, can't find item with id ${id}` });
+  .delete(async (req, res) => {
+    try {
+      const testimonial = await Testimonial.findById(req.params.id);
+      if (testimonial) {
+        await Testimonial.deleteOne({ _id: req.params.id });
+        res.json({ message: "OK" });
+      } else {
+        res.status(404).json({ message: "Not found..." });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err });
+    }
   });
 
 module.exports = router;
