@@ -31,13 +31,25 @@ exports.getById = async (req, res) => {
 exports.addNew = async (req, res) => {
   const { day, seat, client, email } = req.body;
   try {
-    const newSeat = new Seat({
-      day: day,
-      seat: seat,
-      client: client,
-      email: email,
-    });
-    await newSeat.save();
+    const isTaken = await Seat.find({ day: day, seat: seat });
+    if (!isTaken.length) {
+      const newSeat = new Seat({
+        day: day,
+        seat: seat,
+        client: client,
+        email: email,
+      });
+      await newSeat.save();
+      await Seat.find({}, (err, seats) => {
+        if (err) {
+          res.status(500).json({ message: err });
+        } else {
+          req.io.emit("seatsUpdated", seats);
+        }
+      });
+    } else {
+      res.status(406).json({ message: "Error, seat taken" });
+    }
     res.json({ message: "OK" });
   } catch (err) {
     res.status(500).json({ message: err });
