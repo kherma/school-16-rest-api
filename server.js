@@ -8,7 +8,7 @@ const path = require("path");
 const cors = require("cors");
 
 const testimonials = require("./routers/testimonials.routes");
-const concetrs = require("./routers/concerts.routes");
+const concerts = require("./routers/concerts.routes");
 const seats = require("./routers/seats.routes");
 
 // ============
@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, "/client/build")));
 app.use("/api", testimonials);
-app.use("/api", concetrs);
+app.use("/api", concerts);
 app.use("/api", seats);
 app.use("/api/*", (req, res) => {
   res.status(404).send({ message: "Error 404, not found" });
