@@ -49,10 +49,13 @@ app.get("*", (req, res) => {
 // BackEnd to DB connection
 // =========================
 
-mongoose.connect("mongodb://localhost:27017/NewWaveDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  "mongodb+srv://kherma:Codulpentru1@musicfestivaldb.3gvce.mongodb.net/MusicFestivalDB?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 const db = mongoose.connection;
 
