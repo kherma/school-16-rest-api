@@ -49,14 +49,11 @@ app.get("*", (req, res) => {
 // BackEnd to DB connection
 // =========================
 
-mongoose.connect(
-  "mongodb+srv://kherma:Codulpentru1@musicfestivaldb.3gvce.mongodb.net/MusicFestivalDB?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
-
+const dbURI =
+  process.env.NODE_ENV === "production"
+    ? "mongodb+srv://kherma:Codulpentru1@musicfestivaldb.3gvce.mongodb.net/MusicFestivalDB?retryWrites=true&w=majority" // remote db
+    : "mongodb://localhost:27017/NewWaveDB"; // local db
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
 db.once("open", () => {
@@ -74,6 +71,8 @@ db.on("error", (err) => {
 const server = app.listen(process.env.PORT || port, () => {
   console.log(`Server is running on port: ${port}`);
 });
+module.exports = server;
+
 const io = socket(server);
 
 io.on("connection", (socket) => {

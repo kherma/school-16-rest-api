@@ -30,7 +30,7 @@ exports.getByPrice = async (req, res) => {
     const min = Number(req.params.price_min);
     const max = Number(req.params.price_max);
     const data = await Concert.find({ price: { $gte: min, $lte: max } });
-    !min > max
+    !(min > max)
       ? res.status(200).json(data)
       : res.status(404).json({ message: "error" });
   } catch (err) {
