@@ -6,6 +6,7 @@ const socket = require("socket.io");
 const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
+const helmet = require("helmet");
 
 const testimonials = require("./routers/testimonials.routes");
 const concerts = require("./routers/concerts.routes");
@@ -21,6 +22,7 @@ const app = express();
 // Middleware
 // ============
 
+app.use(helmet());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
