@@ -51,7 +51,7 @@ app.get("*", (req, res) => {
 
 const dbURI =
   process.env.NODE_ENV === "production"
-    ? "mongodb+srv://kherma:Codulpentru1@musicfestivaldb.3gvce.mongodb.net/MusicFestivalDB?retryWrites=true&w=majority" // remote db
+    ? `mongodb+srv://${process.env.GH_USER}:${process.env.DB_KEY}@musicfestivaldb.3gvce.mongodb.net/${DB_NAME}?retryWrites=true&w=majority` // remote db
     : "mongodb://localhost:27017/NewWaveDB"; // local db
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
